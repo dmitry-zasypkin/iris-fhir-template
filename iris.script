@@ -28,4 +28,19 @@ zw ##class(HS.FHIRServer.Tools.DataLoader).SubmitResourceFiles("/opt/irisapp/fhi
 
 do $System.OBJ.LoadDir("/opt/irisapp/src","ck",,1)
 //zpm "install fhir-portal"
+
+
+/////////////////////////////// Install one more instance of a FHIR Service into the current namespace: referential integrity PoC
+set appKey = "/fhir-ri/r4"
+set strategyClass = "iscru.fhir.ri.IntegrityStrategy"
+do ##class(HS.FHIRServer.Installer).InstallInstance(appKey, strategyClass, metadataPackages)
+
+// Configure FHIR Service instance to accept unauthenticated requests
+set strategy = ##class(HS.FHIRServer.API.InteractionsStrategy).GetStrategyForEndpoint(appKey)
+set config = strategy.GetServiceConfigData()
+set config.DebugMode = 4
+do strategy.SaveServiceConfigData(config)
+
+zw ##class(HS.FHIRServer.Tools.DataLoader).SubmitResourceFiles("/opt/irisapp/fhirdata/", "FHIRServer", appKey)
+
 halt
