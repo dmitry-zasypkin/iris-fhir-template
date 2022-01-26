@@ -13,7 +13,7 @@ Method AddVersion(pCurrentStorageObj As HS.FHIRServer.Storage.Json.Resource, pCh
 		#dim refKey As %String = $order(@..#refsGlobal@("to", pCurrentStorageObj.Key, ""))
 		if (refKey '= "")
 		{
-			$$$ThrowStatus($$$ADDSC(..#FHIR400STATUS, $$$ERROR($$$GeneralError, refKey _" has a reference to the resource being deleted")))
+			$$$ThrowStatus($$$ADDSC(..#FHIR400STATUS, $$$ERROR($$$GeneralError, refKey _" contains a reference to the resource being deleted")))
 		}
 	}
 	else
