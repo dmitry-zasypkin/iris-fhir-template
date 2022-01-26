@@ -99,6 +99,9 @@ ClassMethod collectReferencesCallback(ByRef visitContext, refObj As %DynamicObje
 {
 	if 'refObj.%IsDefined("reference") quit
 	
+	// skip references to contained resources
+	if ($extract(refObj.reference, 1) = "#") quit
+	
 	// update references sub-array of visitContext
 	set visitContext("references", refObj.reference) = 1
 }
