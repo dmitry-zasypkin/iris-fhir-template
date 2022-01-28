@@ -10,8 +10,7 @@ services:
       - 32783:52773
       - 32784:53773
     volumes:
-      - ~/iris.key:/usr/irissys/mgr/iris.key
       - ./:/irisdev/app
       - ~/iris:/dur
     environment:
-      - ISC_DATA_DIRECTORY=/dur
+      - ISC_DATA_DIRECTORY=/dur/1

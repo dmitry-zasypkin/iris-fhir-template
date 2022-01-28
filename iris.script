@@ -1,6 +1,3 @@
-zn "%SYS"
-Do ##class(Security.Users).UnExpireUserPasswords("*")
-
 zn "HSLIB"
 set namespace="FHIRSERVER"
 Set appKey = "/fhir/r4"
@@ -32,7 +29,6 @@ do strategy.SaveServiceConfigData(config)
 zw ##class(HS.FHIRServer.Tools.DataLoader).SubmitResourceFiles("/opt/irisapp/fhirdata/", "FHIRServer", appKey)
 
 do $System.OBJ.LoadDir("/opt/irisapp/src","ck",,1)
-//zpm "install fhir-portal"
 
 
 /////////////////////////////// Install one more instance of a FHIR Service into the current namespace: referential integrity PoC
@@ -49,14 +45,25 @@ do strategy.SaveServiceConfigData(config)
 zw ##class(HS.FHIRServer.Tools.DataLoader).SubmitResourceFiles("/opt/irisapp/fhirdata/", "FHIRServer", appKey)
 
 
-/////////////////////////////// Mark code database read-only in order to keep it inside the container
+/////////////////////////////// Mark code database read-only in order to keep it inside the container + same for HSLIB
 zn "%SYS"
-set dbDir = $piece(##class(Config.Databases).DatabaseByName(vars("CodeDBName")), "^", *)
-set db = ##class(SYS.Database).%OpenId(dbDir,, .sc)
-if 'sc { write $System.Status.GetErrorText(sc),!  do ##class(%SYSTEM.Process).Terminate(, 1) }
+set dbDir = $piece(##class(Config.Databases).DatabaseByName(namespace _ "CODE"), "^", *)
+write "Code database dir: " _ dbDir,!
 
+set db = ##class(SYS.Database).%OpenId(dbDir,, .sc)
 set db.ReadOnly = 1
+set db.ResourceName = "%DB_"_$ZCVT(namespace,"U")
 set sc = db.%Save()
-if 'sc { write $System.Status.GetErrorText(sc),!  do ##class(%SYSTEM.Process).Terminate(, 1) }
+if 'sc write "*** ERROR *** " _ $System.Status.GetErrorText(sc),!
+
+set hslibDir = $piece(##class(Config.Databases).DatabaseByName("HSLIB"), "^", *)
+set hslib = ##class(SYS.Database).%OpenId(hslibDir,, .sc)
+set hslib.ReadOnly = 1
+set sc = hslib.%Save()
+if 'sc write "*** ERROR *** " _ $System.Status.GetErrorText(sc),!
+
+do ##class(SYS.Container).QuiesceForBundling()
+do ##class(Security.Users).UnExpireUserPasswords("*")
 
 halt
+

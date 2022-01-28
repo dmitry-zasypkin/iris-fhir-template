@@ -45,7 +45,6 @@ Method AddVersion(pCurrentStorageObj As HS.FHIRServer.Storage.Json.Resource, pCh
 						||
 					($classmethod(rsrcClass, "DeletedGetStored", $piece(ref, "/", 2)) = "1")
 			{
-				$$$FSLog("!!!!!!" _ $classmethod(rsrcClass, "DeletedGetStored", $piece(ref, "/", 2)))
 				$$$ThrowStatus($$$ADDSC(..#FHIR400STATUS, $$$ERROR($$$GeneralError, "Referenced resource not found: " _ ref)))
 			}
 		}
