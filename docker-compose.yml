@@ -12,3 +12,6 @@ services:
     volumes:
       - ~/iris.key:/usr/irissys/mgr/iris.key
       - ./:/irisdev/app
+      - ~/iris:/dur
+    environment:
+      - ISC_DATA_DIRECTORY=/dur
