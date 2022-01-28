@@ -1,6 +1,8 @@
 Class iscru.fhir.ri.IntegrityInteractions Extends HS.FHIRServer.Storage.Json.Interactions
 {
 
+Parameter BatchHandlerClass = "iscru.fhir.ri.IntegrityBundleProcessor";
+
 Parameter refsGlobal = "^iscru.fhir.ReferentialIntegrityData";
 
 Parameter FHIR400STATUS = {$$$ERROR("<HSFHIRErr>ValidationFailure", "|400|error|invalid")};
@@ -24,7 +26,7 @@ Method AddVersion(pCurrentStorageObj As HS.FHIRServer.Storage.Json.Resource, pCh
 		set visitContext("callbackClass") = $classname()
 		set visitContext("callbackMethod") = "collectReferencesCallback"
 
-		do ##class(HS.FHIRServer.Util.ReferenceVisitor).VisitAll(pNewResource, .visitContext)
+		do ##class(iscru.fhir.ri.EnhancedReferenceVisitor).VisitAll(pNewResource, .visitContext)
 		
 		// check collected references
 		#dim ref As %String = ""
